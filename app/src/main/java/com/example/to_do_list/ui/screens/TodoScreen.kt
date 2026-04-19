@@ -11,17 +11,23 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.to_do_list.data.Todo
 import com.example.to_do_list.viewmodel.TodoViewModel
 
 @Composable
-fun TodoScreen(viewModel: TodoViewModel) {
+fun TodoScreen(
+    todos: List<Todo>,
+    addTodo: (String) -> Unit
+) {
     var showInput by remember { mutableStateOf(false) }
-    var text by remember { mutableStateOf("test") }
+    var text by remember { mutableStateOf("test") } // eigentlich ins viewmodel
     var showButtonAddTodo by remember { mutableStateOf(true) }
 
     Scaffold { innerPadding ->
@@ -29,7 +35,7 @@ fun TodoScreen(viewModel: TodoViewModel) {
             item {
                 Text(text = "Todo Screen")
             }
-            items(viewModel.todos){todo->
+            items(todos){todo->
                 Text(todo.title)
             }
             if(showButtonAddTodo) {
@@ -49,7 +55,9 @@ fun TodoScreen(viewModel: TodoViewModel) {
                         placeholder = { Text("Neues Todo") }
                     )
                     if(text.isNotEmpty()){
-                        Button(onClick = {})
+                        Button(onClick = {
+                            addTodo(text)
+                        })
                         { Text("Add to list") }
                     }
                 }
