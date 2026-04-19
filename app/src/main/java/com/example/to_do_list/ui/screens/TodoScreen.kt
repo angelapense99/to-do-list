@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -21,6 +22,7 @@ import com.example.to_do_list.viewmodel.TodoViewModel
 fun TodoScreen(viewModel: TodoViewModel) {
     var showInput by remember { mutableStateOf(false) }
     var text by remember { mutableStateOf("test") }
+    var showButtonAddTodo by remember { mutableStateOf(true) }
 
     Scaffold { innerPadding ->
         LazyColumn(modifier = Modifier.padding(innerPadding)) {
@@ -30,19 +32,29 @@ fun TodoScreen(viewModel: TodoViewModel) {
             items(viewModel.todos){todo->
                 Text(todo.title)
             }
-            item {
-                Button(onClick = {showInput = true})
-                { Text("Add To-do.") }
+            if(showButtonAddTodo) {
+                item {
+                    Button(onClick = {
+                        showInput = true
+                        showButtonAddTodo = false
+                    })
+                    { Text("Add To-do.") }
+                }
             }
             if (showInput) {
                 item {
-                    TextField(
+                    OutlinedTextField(
                         value = text,
                         onValueChange = { text = it },
                         placeholder = { Text("Neues Todo") }
                     )
+                    if(text.isNotEmpty()){
+                        Button(onClick = {})
+                        { Text("Add to list") }
+                    }
                 }
             }
+
         }
 
     }
