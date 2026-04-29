@@ -9,27 +9,41 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.room.Room
 import com.example.to_do_list.data.AppDatabase
 import com.example.to_do_list.data.TodoRepository
 import com.example.to_do_list.ui.screens.TodoScreen
 import com.example.to_do_list.ui.theme.TodolistTheme
 import com.example.to_do_list.viewmodel.TodoViewModel
+import com.example.to_do_list.viewmodel.UserRepository
+import dagger.hilt.android.AndroidEntryPoint
+import jakarta.inject.Inject
+import kotlin.reflect.KClass
 
+
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        /*
         val db = Room.databaseBuilder(
             applicationContext,
             AppDatabase::class.java,
             "app_database"
         ).build()
+
         enableEdgeToEdge()
         val viewmodel = TodoViewModel(db.todoDao())
+         */
         setContent {
+            val viewModel: TodoViewModel = hiltViewModel()
             TodolistTheme {
-                TodoScreen(viewmodel.todos.collectAsState(emptyList()).value, viewmodel::addTodo)
+                val todos = viewModel.todos.collectAsState(initial = emptyList()).value
+                TodoScreen(
+                    todos = todos,
+                    addTodo = viewModel::addTodo,
+                    delete = viewModel::deleteTodo)
             }
         }
     }

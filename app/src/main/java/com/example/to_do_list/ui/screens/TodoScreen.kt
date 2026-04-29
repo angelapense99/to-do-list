@@ -17,32 +17,36 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.collectAsState
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.to_do_list.data.Todo
+import com.example.to_do_list.ui.component.TodoItem
 import com.example.to_do_list.viewmodel.TodoViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun TodoScreen(
     todos: List<Todo>,
-    addTodo: (String) -> Unit
+    addTodo: (String) -> Unit,
+    delete: (Todo)-> Unit,
+    viewModel: TodoViewModel = hiltViewModel()
 ) {
     var showInput by remember { mutableStateOf(false) }
-    var text by remember { mutableStateOf("test") } // eigentlich ins viewmodel
-    var showButtonAddTodo by remember { mutableStateOf(true) }
+    val text by viewModel.text.collectAsState()
 
     Scaffold { innerPadding ->
         LazyColumn(modifier = Modifier.padding(innerPadding)) {
             item {
                 Text(text = "Todo Screen")
             }
-            items(todos){todo->
-                Text(todo.title)
+            items(items = todos, key = { it.id }) { todo->
+                TodoItem(todo, onDelete = { delete(it) })
             }
-            if(showButtonAddTodo) {
+            if(!showInput) {
                 item {
                     Button(onClick = {
                         showInput = true
-                        showButtonAddTodo = false
                     })
                     { Text("Add To-do.") }
                 }
@@ -51,7 +55,7 @@ fun TodoScreen(
                 item {
                     OutlinedTextField(
                         value = text,
-                        onValueChange = { text = it },
+                        onValueChange = { viewModel.onTextChanged(it) },
                         placeholder = { Text("Neues Todo") }
                     )
                     if(text.isNotEmpty()){
