@@ -56,11 +56,11 @@ fun TodoScreen(
                     OutlinedTextField(
                         value = text,
                         onValueChange = { viewModel.onTextChanged(it) },
-                        placeholder = { Text("Neues Todo") }
                     )
                     if(text.isNotEmpty()){
                         Button(onClick = {
                             addTodo(text)
+                            viewModel.onTextChanged("")
                         })
                         { Text("Add to list") }
                     }
