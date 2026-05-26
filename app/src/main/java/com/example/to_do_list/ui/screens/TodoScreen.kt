@@ -25,6 +25,22 @@ import com.example.to_do_list.ui.component.TodoItem
 import com.example.to_do_list.viewmodel.TodoViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 
+/**
+ * Main screen of the to-do application.
+ *
+ * Displays:
+ * - a list of all to-dos
+ * - an input field for creating new to-dos
+ * - buttons for adding items
+ *
+ * The text input state is managed by the ViewModel.
+ *
+ * @param todos Current list of all to-dos
+ * @param addTodo Callback used to add a new to-do
+ * @param delete Callback used to delete a to-do
+ * @param viewModel ViewModel responsible for managing UI state
+ */
+
 @Composable
 fun TodoScreen(
     todos: List<Todo>,
@@ -32,17 +48,27 @@ fun TodoScreen(
     delete: (Todo)-> Unit,
     viewModel: TodoViewModel = hiltViewModel()
 ) {
+    // Controls whether the input field is visible
     var showInput by remember { mutableStateOf(false) }
+
+    // Observes the current text input state from the ViewModel
     val text by viewModel.text.collectAsState()
 
     Scaffold { innerPadding ->
+
+        // Scrollable container for all UI elements
         LazyColumn(modifier = Modifier.padding(innerPadding)) {
+            // Screen title
             item {
                 Text(text = "Todo Screen")
             }
+
+            // Displays all existing to-dos
             items(items = todos, key = { it.id }) { todo->
                 TodoItem(todo, onDelete = { delete(it) })
             }
+
+            // Button used to show the input field
             if(!showInput) {
                 item {
                     Button(onClick = {
@@ -51,15 +77,25 @@ fun TodoScreen(
                     { Text("Add To-do.") }
                 }
             }
+
+            // Input section for adding a new to-do
             if (showInput) {
                 item {
+                    // Text field for entering a new to-do
                     OutlinedTextField(
                         value = text,
                         onValueChange = { viewModel.onTextChanged(it) },
                     )
+
+                    // The add button is only shown
+                    // when the input is not empty
                     if(text.isNotEmpty()){
                         Button(onClick = {
+
+                            // Adds the new to-do
                             addTodo(text)
+
+                            // Clears the input field
                             viewModel.onTextChanged("")
                         })
                         { Text("Add to list") }
