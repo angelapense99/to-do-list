@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">to-do-list</string>
+    <string name="priority_1">Priorität 1</string>
 </resources>
