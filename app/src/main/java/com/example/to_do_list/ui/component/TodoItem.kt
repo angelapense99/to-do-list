@@ -1,5 +1,6 @@
 package com.example.to_do_list.ui.component
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -54,19 +55,21 @@ fun TodoItem(
                 shape = RoundedCornerShape(20.dp),
                 elevation = CardDefaults.cardElevation(6.dp)
             ) {
-                Row(
+                Column (
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(20.dp),
-                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     //Icon(Icons.Filled.RadioButtonUnchecked, null)
-                    Spacer(Modifier.width(12.dp))
                     Text(
                         text = todo.title,
                         style = MaterialTheme.typography.titleMedium
                     )
+                    Text(
+                        text = "Priorität: ${todo.priority}"
+                    )
                 }
+
             }
         }
     )

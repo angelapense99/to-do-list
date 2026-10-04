@@ -52,15 +52,35 @@ class TodoViewModel @Inject constructor(
         _text.value = newText
     }
 
+    /**
+     * Holds the current priority input value for the UI.
+     */
+    private val _priority = MutableStateFlow(2)
+
+    /**
+     * Public read-only access to the priority input state.
+     */
+
+    val priority: StateFlow<Int> = _priority.asStateFlow()
+
+    /**
+     * Updates the current priority input value.
+     *
+     * @param newPriority New value entered by the user
+     */
+
+    fun onPriorityChanged(newPriority: Int) {
+        _priority.value = newPriority
+    }
 
     /**
      * Inserts a new to-do item into the database.
      *
      * @param title Title of the new to-do item
      */
-    fun addTodo(title: String) {
+    fun addTodo(title: String, priority: Int) {
         viewModelScope.launch {
-            repository.insert(Todo(title=title, done = false, priority = 2))
+            repository.insert(Todo(title=title, done = false, priority = priority))
         }
     }
 
