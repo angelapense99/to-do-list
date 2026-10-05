@@ -20,7 +20,7 @@ interface TodoDao {
      *
      * @return Flow emitting the current list of Todo items
      */
-    @Query("SELECT * FROM tasks")
+    @Query("SELECT * FROM tasks ORDER BY priority ASC")
     fun getAll(): Flow<List<Todo>>
 
     /**
