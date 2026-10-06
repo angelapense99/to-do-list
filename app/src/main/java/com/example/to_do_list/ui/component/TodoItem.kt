@@ -30,7 +30,7 @@ import androidx.compose.material.icons.filled.RadioButtonUnchecked
 @Composable
 fun TodoItem(
     todo: Todo,
-    onDelete: (Todo) -> Unit
+    onDone: (Todo) -> Unit
 ) {
     val state = rememberSwipeToDismissBoxState(
         initialValue = SwipeToDismissBoxValue.Settled,
@@ -44,7 +44,7 @@ fun TodoItem(
             if (value == SwipeToDismissBoxValue.EndToStart ||
                 value == SwipeToDismissBoxValue.StartToEnd
             ) {
-                onDelete(todo)
+                onDone(todo)
             }
         },
         content = {
@@ -67,6 +67,9 @@ fun TodoItem(
                     )
                     Text(
                         text = "Priorität: ${todo.priority}"
+                    )
+                    Text(
+                        text = "status: ${todo.done}"
                     )
                 }
 

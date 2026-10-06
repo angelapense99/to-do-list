@@ -32,11 +32,14 @@ class MainActivity : ComponentActivity() {
 
                 // Observes current list of todos
                 val todos = viewModel.todos.collectAsState(initial = emptyList()).value
+                val openTodos = viewModel.openTodos.collectAsState(initial = emptyList()).value
+                val closedTodos = viewModel.closedTodos.collectAsState(initial = emptyList()).value
 
                 TodoScreen(
-                    todos = todos,
+                    stillTodos = openTodos,
+                    alreadyDones = closedTodos,
                     addTodo = viewModel::addTodo,
-                    delete = viewModel::deleteTodo)
+                    updateCompletionStatus = viewModel::updateOpenTodo)
             }
         }
     }

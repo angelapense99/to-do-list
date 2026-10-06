@@ -23,6 +23,13 @@ interface TodoDao {
     @Query("SELECT * FROM tasks ORDER BY priority ASC")
     fun getAll(): Flow<List<Todo>>
 
+    //Filters between active and completed todos.
+    @Query("Select * FROM tasks WHERE done = 0 ORDER BY priority ASC")
+    fun getAllOpen(): Flow<List<Todo>>
+
+    @Query("Select * FROM tasks WHERE done = 1")
+    fun getAllClosed(): Flow<List<Todo>>
+
     /**
      * Inserts a new Todo item into the database.
      *
@@ -38,4 +45,7 @@ interface TodoDao {
      */
     @Delete
     suspend fun delete(task: Todo)
+
+    @Update
+    suspend fun update(task: Todo)
 }
