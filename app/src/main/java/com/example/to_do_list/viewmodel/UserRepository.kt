@@ -31,4 +31,12 @@ class UserRepository @Inject constructor(
      * @param todo The Todo item to delete
      */
     suspend fun delete(todo: Todo) = dao.delete(todo)
+
+    /**
+     * Updates the completion status of a Todo item from the database.
+     *
+     * @param openTodo The Todo item to update
+     */
+
+    suspend fun update(openTodo: Todo) = dao.update( openTodo  )
 }

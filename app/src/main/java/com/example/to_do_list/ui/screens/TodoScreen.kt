@@ -50,9 +50,10 @@ import androidx.compose.runtime.remember
 
 @Composable
 fun TodoScreen(
-    todos: List<Todo>,
+    stillTodos: List<Todo>,
+    alreadyDones: List<Todo>,
     addTodo: (String, Int) -> Unit,
-    delete: (Todo)-> Unit,
+    updateCompletionStatus: (Todo)-> Unit,
     viewModel: TodoViewModel = hiltViewModel()
 ) {
     // Controls whether the input field is visible
@@ -73,8 +74,12 @@ fun TodoScreen(
             }
 
             // Displays all existing to-dos
-            items(items = todos, key = { it.id }) { todo->
-                TodoItem(todo, onDelete = { delete(it) })
+            items(items = stillTodos, key = { it.id }) { stillTodos->
+                TodoItem(stillTodos, onDone = { updateCompletionStatus(it) })
+            }
+            // Displays all completed to-dos
+            items(items = alreadyDones, key = { it.id }) {alreadyDones ->
+                TodoItem(alreadyDones, onDone = { updateCompletionStatus(it)})
             }
 
             // Button used to show the input field

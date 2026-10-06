@@ -33,6 +33,19 @@ class TodoViewModel @Inject constructor(
     val todos = repository.dao.getAll()
 
     /**
+     * Stream of all active to-dos from the database.
+     */
+
+    val openTodos = repository.dao.getAllOpen()
+
+    /**
+     * Stream of all completed to-dos from the database.
+     */
+
+    val closedTodos = repository.dao.getAllClosed()
+
+
+    /**
      * Holds the current text input value for the UI.
      */
     private val _text = MutableStateFlow("")
@@ -93,6 +106,20 @@ class TodoViewModel @Inject constructor(
     fun deleteTodo(todo: Todo) {
         viewModelScope.launch {
             repository.delete(todo)
+        }
+    }
+
+    /**
+     * Changes the done-status from an existing to-do to True.
+     *
+     * @param openTodo
+     * The to-do item to update.
+     */
+    fun updateOpenTodo(openTodo: Todo) {
+        viewModelScope.launch {
+            repository.update(
+                openTodo.copy(done = true)
+            )
         }
     }
 }
