@@ -118,7 +118,7 @@ class TodoViewModel @Inject constructor(
     fun updateOpenTodo(openTodo: Todo) {
         viewModelScope.launch {
             repository.update(
-                openTodo.copy(done = true)
+                openTodo.copy(done = !openTodo.done)
             )
         }
     }
