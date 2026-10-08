@@ -35,8 +35,8 @@ class UserRepository @Inject constructor(
     /**
      * Updates the completion status of a Todo item from the database.
      *
-     * @param openTodo The Todo item to update
+     * @param todo The Todo item to update
      */
 
-    suspend fun update(openTodo: Todo) = dao.update( openTodo  )
+    suspend fun update(todo: Todo) = dao.update( todo  )
 }

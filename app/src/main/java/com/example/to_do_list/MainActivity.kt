@@ -39,7 +39,9 @@ class MainActivity : ComponentActivity() {
                     stillTodos = openTodos,
                     alreadyDones = closedTodos,
                     addTodo = viewModel::addTodo,
-                    updateCompletionStatus = viewModel::updateOpenTodo)
+                    updateCompletionStatus = viewModel::updateCompletionStatus,
+                    updateTodo = viewModel::updateTodo
+                )
             }
         }
     }
