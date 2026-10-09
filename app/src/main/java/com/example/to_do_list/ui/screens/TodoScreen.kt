@@ -57,6 +57,7 @@ fun TodoScreen(
     addTodo: (String, Int) -> Unit,
     updateCompletionStatus: (Todo)-> Unit,
     updateTodo: (Todo) -> Unit,
+    deleteTodo: (Todo) -> Unit,
     viewModel: TodoViewModel = hiltViewModel()
 ) {
     // Controls whether the input field is visible
@@ -122,14 +123,26 @@ fun TodoScreen(
                         )
                     }
                 }
+                if (todoToEdit != null) {
+                    Button(
+                        onClick = {
+                            deleteTodo(todoToEdit!!)
+                            todoToEdit = null
+                            viewModel.onTextChanged("")
+                        }
+                    ) {
+                        Text("Delete")
+                    }
+                }
 
-                // The add button is only shown
-                // when the text input is not empty
+                // The add button is only shown when the text input is not empty
                 if(text.isNotEmpty()){
                     Button(onClick = {
+                        //new todo
                         if (todoToEdit == null) {
                             addTodo(text, priority)
                         }
+                        //edit todo
                         else {
                             updateTodo(
                                 todoToEdit!!.copy(

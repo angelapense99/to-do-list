@@ -40,7 +40,8 @@ class MainActivity : ComponentActivity() {
                     alreadyDones = closedTodos,
                     addTodo = viewModel::addTodo,
                     updateCompletionStatus = viewModel::updateCompletionStatus,
-                    updateTodo = viewModel::updateTodo
+                    updateTodo = viewModel::updateTodo,
+                    deleteTodo = viewModel:: deleteTodo
                 )
             }
         }
