@@ -1,5 +1,6 @@
 package com.example.to_do_list.ui.component
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,12 +26,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.to_do_list.data.Todo
 import androidx.compose.material.icons.filled.RadioButtonUnchecked
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TodoItem(
     todo: Todo,
-    onDone: (Todo) -> Unit
+    onDone: (Todo) -> Unit,
+    onClick: (Todo) -> Unit
 ) {
     val state = rememberSwipeToDismissBoxState(
         initialValue = SwipeToDismissBoxValue.Settled,
@@ -58,7 +61,10 @@ fun TodoItem(
                 Column (
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(20.dp),
+                        .padding(20.dp)
+                        .clickable {
+                            onClick(todo)
+                        },
                 ) {
                     //Icon(Icons.Filled.RadioButtonUnchecked, null)
                     Text(
@@ -70,6 +76,9 @@ fun TodoItem(
                     )
                     Text(
                         text = "status: ${todo.done}"
+                    )
+                    Text(
+                        text = "Tap to edit."
                     )
                 }
 

@@ -1,6 +1,7 @@
 package com.example.to_do_list.ui.screens
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -31,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
 
 /**
  * Main screen of the to-do application.
@@ -54,6 +56,8 @@ fun TodoScreen(
     alreadyDones: List<Todo>,
     addTodo: (String, Int) -> Unit,
     updateCompletionStatus: (Todo)-> Unit,
+    updateTodo: (Todo) -> Unit,
+    deleteTodo: (Todo) -> Unit,
     viewModel: TodoViewModel = hiltViewModel()
 ) {
     // Controls whether the input field is visible
@@ -63,8 +67,102 @@ fun TodoScreen(
     val text by viewModel.text.collectAsState()
     val priority by viewModel.priority.collectAsState()
     var expanded by remember { mutableStateOf(false) }
+    var todoToEdit by remember { mutableStateOf<Todo?>(null) }
+
+    LaunchedEffect(todoToEdit) {
+        todoToEdit?.let {
+            viewModel.onTextChanged(it.title)
+            viewModel.onPriorityChanged(it.priority)
+        }
+    }
 
     Scaffold { innerPadding ->
+        Column(modifier = Modifier.padding(innerPadding)) {
+            // Input section for adding a new to-do
+            if (showInput) {
+                // Text field for entering a new to-do
+                OutlinedTextField(
+                    value = text,
+                    onValueChange = { viewModel.onTextChanged(it) },
+                    label = { Text("To-do")}
+                )
+                // Priority Dropdown field
+                Box {
+                    Button(
+                        onClick = { expanded = true }
+                    ) {
+                        Text("Priorität: $priority")
+                    }
+
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Priorität 1") },
+                            onClick = {
+                                viewModel.onPriorityChanged(1)
+                                expanded = false
+                            }
+                        )
+
+                        DropdownMenuItem(
+                            text = { Text("Priorität 2") },
+                            onClick = {
+                                viewModel.onPriorityChanged(2)
+                                expanded = false
+                            }
+                        )
+
+                        DropdownMenuItem(
+                            text = { Text("Priorität 3") },
+                            onClick = {
+                                viewModel.onPriorityChanged(3)
+                                expanded = false
+                            }
+                        )
+                    }
+                }
+                if (todoToEdit != null) {
+                    Button(
+                        onClick = {
+                            deleteTodo(todoToEdit!!)
+                            todoToEdit = null
+                            viewModel.onTextChanged("")
+                        }
+                    ) {
+                        Text("Delete")
+                    }
+                }
+
+                // The add button is only shown when the text input is not empty
+                if(text.isNotEmpty()){
+                    Button(onClick = {
+                        //new todo
+                        if (todoToEdit == null) {
+                            addTodo(text, priority)
+                        }
+                        //edit todo
+                        else {
+                            updateTodo(
+                                todoToEdit!!.copy(
+                                    title = text,
+                                    priority = priority
+                                )
+                            )
+                            todoToEdit = null
+                        }
+
+                        // Clears the input field
+                        viewModel.onTextChanged("")
+                    }) {
+                        Text(
+                            if (todoToEdit == null) "Add to list"
+                            else "Save"
+                        )
+                    }
+                }
+            }
 
         // Scrollable container for all UI elements
         LazyColumn(modifier = Modifier.padding(innerPadding)) {
@@ -75,11 +173,25 @@ fun TodoScreen(
 
             // Displays all existing to-dos
             items(items = stillTodos, key = { it.id }) { stillTodos->
-                TodoItem(stillTodos, onDone = { updateCompletionStatus(it) })
+                TodoItem(
+                    stillTodos,
+                    onDone = { updateCompletionStatus(it) },
+                    onClick = {
+                        todoToEdit = it
+                        showInput = true
+                    }
+                )
             }
             // Displays all completed to-dos
             items(items = alreadyDones, key = { it.id }) {alreadyDones ->
-                TodoItem(alreadyDones, onDone = { updateCompletionStatus(it)})
+                TodoItem(
+                    alreadyDones,
+                    onDone = { updateCompletionStatus(it)},
+                    onClick = {
+                        todoToEdit = it
+                        showInput = true
+                    }
+                )
             }
 
             // Button used to show the input field
@@ -91,71 +203,7 @@ fun TodoScreen(
                     { Text("Add To-do.") }
                 }
             }
-
-            // Input section for adding a new to-do
-            if (showInput) {
-                item {
-                    // Text field for entering a new to-do
-                    OutlinedTextField(
-                        value = text,
-                        onValueChange = { viewModel.onTextChanged(it) },
-                        label = { Text("To-do")}
-                    )
-                    // Priority Dropdown field
-                    Box {
-                        Button(
-                            onClick = { expanded = true }
-                        ) {
-                            Text("Priorität: $priority")
-                        }
-
-                        DropdownMenu(
-                            expanded = expanded,
-                            onDismissRequest = { expanded = false }
-                        ) {
-                            DropdownMenuItem(
-                                text = { Text("Priorität 1") },
-                                onClick = {
-                                    viewModel.onPriorityChanged(1)
-                                    expanded = false
-                                }
-                            )
-
-                            DropdownMenuItem(
-                                text = { Text("Priorität 2") },
-                                onClick = {
-                                    viewModel.onPriorityChanged(2)
-                                    expanded = false
-                                }
-                            )
-
-                            DropdownMenuItem(
-                                text = { Text("Priorität 3") },
-                                onClick = {
-                                    viewModel.onPriorityChanged(3)
-                                    expanded = false
-                                }
-                            )
-                        }
-                    }
-
-                    // The add button is only shown
-                    // when the text input is not empty
-                    if(text.isNotEmpty()){
-                        Button(onClick = {
-
-                            // Adds the new to-do
-                            addTodo(text, priority)
-
-                            // Clears the input field
-                            viewModel.onTextChanged("")
-                        })
-                        { Text("Add to list") }
-                    }
-                }
-            }
-
         }
-
+        }
     }
 }

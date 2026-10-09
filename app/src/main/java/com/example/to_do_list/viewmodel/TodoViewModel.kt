@@ -110,16 +110,22 @@ class TodoViewModel @Inject constructor(
     }
 
     /**
-     * Changes the done-status from an existing to-do to True.
+     * Changes the done-status from an existing to-do.
      *
-     * @param openTodo
+     * @param todo
      * The to-do item to update.
      */
-    fun updateOpenTodo(openTodo: Todo) {
+    fun updateCompletionStatus(todo: Todo) {
         viewModelScope.launch {
             repository.update(
-                openTodo.copy(done = !openTodo.done)
+                todo.copy(done = !todo.done)
             )
+        }
+    }
+
+    fun updateTodo(todo: Todo) {
+        viewModelScope.launch {
+            repository.update(todo)
         }
     }
 }
