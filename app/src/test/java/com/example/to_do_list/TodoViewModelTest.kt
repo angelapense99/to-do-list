@@ -56,5 +56,45 @@ class TodoViewModelTest {
             )
         }
     }
+
+    @Test
+    fun `updateTodo passes updated todo to repository`() = runTest(testDispatcher) {
+        // Arrange
+        val updatedTodo = Todo(
+            id = 1,
+            title = "Lernen",
+            done = false,
+            priority = 1
+        )
+
+        // Act
+        viewModel.updateTodo(updatedTodo)
+        advanceUntilIdle()
+
+        // Assert
+        coVerify {
+            repository.update(updatedTodo)
+        }
+    }
+
+    @Test
+    fun `deleteTodo passes todo to repository`() = runTest(testDispatcher) {
+        // Arrange
+        val todo = Todo(
+            id = 1,
+            title = "Lernen",
+            done = false,
+            priority = 1
+        )
+
+        // Act
+        viewModel.deleteTodo(todo)
+        advanceUntilIdle()
+
+        // Assert
+        coVerify {
+            repository.delete(todo)
+        }
+    }
 }
 
