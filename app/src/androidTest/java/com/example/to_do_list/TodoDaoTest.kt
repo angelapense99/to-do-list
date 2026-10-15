@@ -59,4 +59,26 @@ class TodoDaoTest {
         assertEquals(false, todos[0].done)
         assertEquals(1, todos[0].priority)
     }
+
+    @Test
+    fun deleteTodo_deleteOutOfDatabase() = runBlocking {
+        // Arrange
+        // insert the task you want to delete afterward
+        val todo = Todo(
+            id = 1,
+            title = "Kochen",
+            done = true,
+            priority = 2
+        )
+        dao.insert(todo)
+
+        // Act
+        dao.delete(todo)
+
+        // Assert
+        // DB should be empty
+
+        val todos = dao.getAll().first()
+        assertEquals(0, todos.size)
+    }
 }

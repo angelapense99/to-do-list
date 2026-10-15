@@ -172,9 +172,9 @@ fun TodoScreen(
             }
 
             // Displays all existing to-dos
-            items(items = stillTodos, key = { it.id }) { stillTodos->
+            items(items = stillTodos, key = { it.id }) { stillTodo ->
                 TodoItem(
-                    stillTodos,
+                    stillTodo,
                     onDone = { updateCompletionStatus(it) },
                     onClick = {
                         todoToEdit = it
@@ -183,9 +183,9 @@ fun TodoScreen(
                 )
             }
             // Displays all completed to-dos
-            items(items = alreadyDones, key = { it.id }) {alreadyDones ->
+            items(items = alreadyDones, key = { it.id }) {alreadyDone ->
                 TodoItem(
-                    alreadyDones,
+                    alreadyDone,
                     onDone = { updateCompletionStatus(it)},
                     onClick = {
                         todoToEdit = it
