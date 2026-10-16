@@ -81,4 +81,41 @@ class TodoDaoTest {
         val todos = dao.getAll().first()
         assertEquals(0, todos.size)
     }
+
+    @Test
+    fun getAllOpen_onlyGetBackOpen() = runBlocking {
+        // Arrange
+        val todo1 = Todo(
+            id = 1,
+            title = "Kochen",
+            done = false,
+            priority = 1
+        )
+        val todo2 = Todo(
+            id = 2,
+            title = "Backen",
+            done = true,
+            priority = 2
+        )
+        val todo3 = Todo(
+            id = 3,
+            title = "Aufräumen",
+            done = false,
+            priority = 2
+        )
+        dao.insert(todo1)
+        dao.insert(todo2)
+        dao.insert(todo3)
+
+        // Act
+        val openTodos = dao.getAllOpen().first()
+
+        // Assert
+        val firstTodo = openTodos[0]
+        val secondTodo = openTodos[1]
+        assertEquals(2, openTodos.size)
+        assertEquals(
+            setOf("Kochen", "Aufräumen"),
+            openTodos.map { it.title }.toSet())
+    }
 }
