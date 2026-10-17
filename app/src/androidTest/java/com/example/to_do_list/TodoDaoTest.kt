@@ -111,11 +111,70 @@ class TodoDaoTest {
         val openTodos = dao.getAllOpen().first()
 
         // Assert
-        val firstTodo = openTodos[0]
-        val secondTodo = openTodos[1]
         assertEquals(2, openTodos.size)
         assertEquals(
             setOf("Kochen", "Aufräumen"),
             openTodos.map { it.title }.toSet())
+    }
+
+    @Test
+    fun getAllClosed_onlyGetBackClosed() = runBlocking {
+        // Arrange
+        val todo1 = Todo(
+            id = 1,
+            title = "Kochen",
+            done = false,
+            priority = 1
+        )
+        val todo2 = Todo(
+            id = 2,
+            title = "Backen",
+            done = true,
+            priority = 2
+        )
+        val todo3 = Todo(
+            id = 3,
+            title = "Aufräumen",
+            done = false,
+            priority = 2
+        )
+        dao.insert(todo1)
+        dao.insert(todo2)
+        dao.insert(todo3)
+
+        // Act
+        val closedTodos = dao.getAllClosed().first()
+
+        // Assert
+        assertEquals(1, closedTodos.size)
+        assertEquals(
+            setOf("Backen"),
+            closedTodos.map { it.title }.toSet())
+    }
+
+    @Test
+    fun update_savesChanges() = runBlocking {
+        // Arrange
+        val todo1 = Todo(
+            id = 1,
+            title = "Kochen",
+            done = false,
+            priority = 1)
+        dao.insert(todo1)
+        // same task but done:
+        val todo2 = Todo(
+            id = 1,
+            title = "Kochen",
+            done = true,
+            priority = 1)
+
+        // Act
+        dao.update(todo2)
+
+        // Assert
+        val todos = dao.getAll().first()
+        assertEquals("Kochen",todos[0].title)
+        assertEquals(1,todos[0].id)
+        assertEquals(true,todos[0].done)
     }
 }
