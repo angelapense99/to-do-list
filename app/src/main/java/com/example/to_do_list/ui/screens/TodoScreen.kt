@@ -2,8 +2,6 @@ package com.example.to_do_list.ui.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -11,7 +9,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -19,19 +16,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.collectAsState
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.to_do_list.data.Todo
 import com.example.to_do_list.ui.component.TodoItem
 import com.example.to_do_list.viewmodel.TodoViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.LaunchedEffect
 
 /**
@@ -44,6 +34,8 @@ import androidx.compose.runtime.LaunchedEffect
  *
  * The text input state is managed by the ViewModel.
  *
+ * Todo:
+ * NEU Schreiben!!!
  * @param todos Current list of all to-dos
  * @param addTodo Callback used to add a new to-do
  * @param delete Callback used to delete a to-do
@@ -52,27 +44,21 @@ import androidx.compose.runtime.LaunchedEffect
 
 @Composable
 fun TodoScreen(
-    stillTodos: List<Todo>,
-    alreadyDones: List<Todo>,
-    addTodo: (String, Int) -> Unit,
-    updateCompletionStatus: (Todo)-> Unit,
-    updateTodo: (Todo) -> Unit,
-    deleteTodo: (Todo) -> Unit,
-    viewModel: TodoViewModel = hiltViewModel()
+    states: TodoScreenState,
+    callbacks: TodoScreenCallbacks,
 ) {
+
     // Controls whether the input field is visible
     var showInput by remember { mutableStateOf(false) }
 
-    // Observes the current text input state from the ViewModel
-    val text by viewModel.text.collectAsState()
-    val priority by viewModel.priority.collectAsState()
+
     var expanded by remember { mutableStateOf(false) }
     var todoToEdit by remember { mutableStateOf<Todo?>(null) }
 
     LaunchedEffect(todoToEdit) {
         todoToEdit?.let {
-            viewModel.onTextChanged(it.title)
-            viewModel.onPriorityChanged(it.priority)
+            callbacks.onTextChanged(it.title)
+            callbacks.onPriorityChanged(it.priority)
         }
     }
 
@@ -82,8 +68,8 @@ fun TodoScreen(
             if (showInput) {
                 // Text field for entering a new to-do
                 OutlinedTextField(
-                    value = text,
-                    onValueChange = { viewModel.onTextChanged(it) },
+                    value = states.text,
+                    onValueChange = { callbacks.onTextChanged(it) },
                     label = { Text("To-do")}
                 )
                 // Priority Dropdown field
@@ -91,7 +77,7 @@ fun TodoScreen(
                     Button(
                         onClick = { expanded = true }
                     ) {
-                        Text("Priorität: $priority")
+                        Text("Priorität: ${states.priority}")
                     }
 
                     DropdownMenu(
@@ -101,7 +87,7 @@ fun TodoScreen(
                         DropdownMenuItem(
                             text = { Text("Priorität 1") },
                             onClick = {
-                                viewModel.onPriorityChanged(1)
+                                callbacks.onPriorityChanged(1)
                                 expanded = false
                             }
                         )
@@ -109,7 +95,7 @@ fun TodoScreen(
                         DropdownMenuItem(
                             text = { Text("Priorität 2") },
                             onClick = {
-                                viewModel.onPriorityChanged(2)
+                                callbacks.onPriorityChanged(2)
                                 expanded = false
                             }
                         )
@@ -117,7 +103,7 @@ fun TodoScreen(
                         DropdownMenuItem(
                             text = { Text("Priorität 3") },
                             onClick = {
-                                viewModel.onPriorityChanged(3)
+                                callbacks.onPriorityChanged(3)
                                 expanded = false
                             }
                         )
@@ -126,9 +112,9 @@ fun TodoScreen(
                 if (todoToEdit != null) {
                     Button(
                         onClick = {
-                            deleteTodo(todoToEdit!!)
+                            callbacks.deleteTodo(todoToEdit!!)
                             todoToEdit = null
-                            viewModel.onTextChanged("")
+                            callbacks.onTextChanged("")
                         }
                     ) {
                         Text("Delete")
@@ -136,25 +122,25 @@ fun TodoScreen(
                 }
 
                 // The add button is only shown when the text input is not empty
-                if(text.isNotEmpty()){
+                if(states.text.isNotEmpty()){
                     Button(onClick = {
                         //new todo
                         if (todoToEdit == null) {
-                            addTodo(text, priority)
+                            callbacks.addTodo(states.text, states.priority)
                         }
                         //edit todo
                         else {
-                            updateTodo(
+                            callbacks.updateTodo(
                                 todoToEdit!!.copy(
-                                    title = text,
-                                    priority = priority
+                                    title = states.text,
+                                    priority = states.priority
                                 )
                             )
                             todoToEdit = null
                         }
 
                         // Clears the input field
-                        viewModel.onTextChanged("")
+                        callbacks.onTextChanged("")
                     }) {
                         Text(
                             if (todoToEdit == null) "Add to list"
@@ -172,10 +158,10 @@ fun TodoScreen(
             }
 
             // Displays all existing to-dos
-            items(items = stillTodos, key = { it.id }) { stillTodo ->
+            items(items = states.stillTodos, key = { it.id }) { stillTodo ->
                 TodoItem(
                     stillTodo,
-                    onDone = { updateCompletionStatus(it) },
+                    onDone = { callbacks.updateCompletionStatus(it) },
                     onClick = {
                         todoToEdit = it
                         showInput = true
@@ -183,10 +169,10 @@ fun TodoScreen(
                 )
             }
             // Displays all completed to-dos
-            items(items = alreadyDones, key = { it.id }) {alreadyDone ->
+            items(items = states.alreadyDones, key = { it.id }) {alreadyDone ->
                 TodoItem(
                     alreadyDone,
-                    onDone = { updateCompletionStatus(it)},
+                    onDone = { callbacks.updateCompletionStatus(it)},
                     onClick = {
                         todoToEdit = it
                         showInput = true
@@ -206,4 +192,20 @@ fun TodoScreen(
         }
         }
     }
+}
+
+data class TodoScreenState(
+    val stillTodos: List<Todo>,
+    val alreadyDones: List<Todo>,
+    val text: String,
+    val priority: Int,
+)
+
+interface TodoScreenCallbacks{
+    fun addTodo (title: String, priority: Int)
+    fun updateCompletionStatus (todo: Todo)
+    fun updateTodo (todo: Todo)
+    fun deleteTodo (todo: Todo)
+    fun onTextChanged(title: String)
+    fun onPriorityChanged(newPriority: Int)
 }
