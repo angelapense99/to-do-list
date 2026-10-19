@@ -13,10 +13,6 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="deleteTodo_deleteOutOfDatabase()">
-        <option name="selectionMode" value="DROPDOWN" />
-        <DialogSelection />
-      </SelectionState>
       <SelectionState runConfigName="getAllOpen_onlyGetBackOpen()">
         <option name="selectionMode" value="DROPDOWN" />
         <DialogSelection />
@@ -30,6 +26,10 @@
         <DialogSelection />
       </SelectionState>
       <SelectionState runConfigName="TodoScreenTest">
+        <option name="selectionMode" value="DROPDOWN" />
+        <DialogSelection />
+      </SelectionState>
+      <SelectionState runConfigName="MainActivity">
         <option name="selectionMode" value="DROPDOWN" />
         <DialogSelection />
       </SelectionState>

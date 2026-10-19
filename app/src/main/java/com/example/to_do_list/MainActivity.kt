@@ -4,8 +4,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.to_do_list.data.Todo
 import com.example.to_do_list.ui.screens.TodoScreen
+import com.example.to_do_list.ui.screens.TodoScreenCallbacks
+import com.example.to_do_list.ui.screens.TodoScreenState
 import com.example.to_do_list.ui.theme.TodolistTheme
 import com.example.to_do_list.viewmodel.TodoViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -30,18 +34,45 @@ class MainActivity : ComponentActivity() {
 
             TodolistTheme {
 
-                // Observes current list of todos
-                val todos = viewModel.todos.collectAsState(initial = emptyList()).value
-                val openTodos = viewModel.openTodos.collectAsState(initial = emptyList()).value
-                val closedTodos = viewModel.closedTodos.collectAsState(initial = emptyList()).value
+                val states = TodoScreenState(
+                    stillTodos = viewModel.openTodos.collectAsState(initial = emptyList()).value,
+                    alreadyDones = viewModel.closedTodos.collectAsState(initial = emptyList()).value,
+                    text = viewModel.text.collectAsState().value,
+                    priority = viewModel.priority.collectAsState().value
+                )
+
+                val callbacks = object: TodoScreenCallbacks {
+                    override fun addTodo(
+                        title: String,
+                        priority: Int,
+                    ) = viewModel.addTodo(title, priority)
+
+                    override fun updateCompletionStatus(
+                        todo: Todo,
+                    ) = viewModel.updateCompletionStatus(todo)
+
+                    override fun updateTodo(
+                        todo: Todo,
+                    ) = viewModel.updateTodo(todo)
+
+
+                    override fun deleteTodo(
+                        todo: Todo
+                    ) = viewModel.deleteTodo(todo)
+
+                    override fun onTextChanged(
+                        title: String
+                    ) = viewModel.onTextChanged(title)
+
+                    override fun onPriorityChanged(
+                        newPriority: Int
+                    ) = viewModel.onPriorityChanged(newPriority)
+                }
+
 
                 TodoScreen(
-                    stillTodos = openTodos,
-                    alreadyDones = closedTodos,
-                    addTodo = viewModel::addTodo,
-                    updateCompletionStatus = viewModel::updateCompletionStatus,
-                    updateTodo = viewModel::updateTodo,
-                    deleteTodo = viewModel:: deleteTodo
+                    states,
+                    callbacks,
                 )
             }
         }
