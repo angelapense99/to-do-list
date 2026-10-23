@@ -1,12 +1,12 @@
 package com.example.to_do_list.ui.screens
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.to_do_list.MainActivity
 import com.example.to_do_list.data.Todo
 import org.junit.Rule
 import org.junit.Test
@@ -19,18 +19,21 @@ class TodoScreenTest {
         Todo(1, "Lernen", false, 1),
         Todo(2, "Einkaufen", false, 2)
     )
-    val states = TodoScreenState(
+    val states =  mutableStateOf(TodoScreenState(
         stillTodos = todos,
         alreadyDones = listOf(),
         text = "",
         priority = 1
+    )
     )
     val callbacks = object : TodoScreenCallbacks {
         override fun addTodo(title: String, priority: Int) {}
         override fun updateCompletionStatus(todo: Todo) {}
         override fun updateTodo(todo: Todo) {}
         override fun deleteTodo(todo: Todo) {}
-        override fun onTextChanged(title: String) {}
+        override fun onTextChanged(title: String) {
+            states.value = states.value.copy(text = title)
+        }
         override fun onPriorityChanged(newPriority: Int) {}
     }
     @get:Rule
@@ -40,7 +43,7 @@ class TodoScreenTest {
     fun todoScreen_titleIsDisplayed() {
         // Arrange:
         composeTestRule.setContent {
-            TodoScreen(states, callbacks)
+            TodoScreen(states.value, callbacks)
         }
 
         // Assert:
@@ -53,7 +56,7 @@ class TodoScreenTest {
     fun todoList_displaysAllTodos() {
         // Arrange
         composeTestRule.setContent {
-            TodoScreen(states, callbacks)
+            TodoScreen(states.value, callbacks)
         }
 
         // Assert:
@@ -70,7 +73,7 @@ class TodoScreenTest {
     fun displaysTheInputField() {
         // Arrange
         composeTestRule.setContent {
-            TodoScreen(states, callbacks)
+            TodoScreen(states.value, callbacks)
         }
 
         // Act:
@@ -81,6 +84,32 @@ class TodoScreenTest {
         // Assert:
         composeTestRule
             .onNodeWithText("To-do")
+            .assertIsDisplayed()
+
+    }
+
+    @Test
+    fun displays_AddToList_Button() {
+        // Arrange
+        composeTestRule.setContent {
+            TodoScreen(states.value, callbacks)
+        }
+
+        // Act:
+        composeTestRule
+            .onNodeWithText("Add To-do.")
+            .performClick()
+        composeTestRule
+            .onNodeWithText("To-do")
+            .performTextInput("Waschen")
+
+        // Assert
+        composeTestRule
+            .onNodeWithText("Waschen")
+            .assertIsDisplayed()
+
+        composeTestRule
+            .onNodeWithText("Add to list")
             .assertIsDisplayed()
 
     }
