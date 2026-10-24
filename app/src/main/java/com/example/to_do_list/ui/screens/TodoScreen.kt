@@ -21,22 +21,22 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.runtime.LaunchedEffect
 
+
 /**
  * Main screen of the to-do application.
  *
  * Displays:
- * - a list of all to-dos
- * - an input field for creating new to-dos
- * - buttons for adding items
+ * - A list of open to-dos and completed to-dos
+ * - An input field for creating and editing to-dos
+ * - A dropdown menu for selecting the priority (1–3)
+ * - Buttons for adding, saving, and deleting to-dos
  *
- * The text input state is managed by the ViewModel.
+ * The screen receives its UI state and callbacks as parameters.
+ * State changes and to-do operations are handled through the callbacks.
  *
- * Todo:
- * NEU Schreiben!!!
- * @param todos Current list of all to-dos
- * @param addTodo Callback used to add a new to-do
- * @param delete Callback used to delete a to-do
- * @param viewModel ViewModel responsible for managing UI state
+ * @param states Current UI state, including the to-do lists, input text, and priority
+ * @param callbacks Callbacks for adding, editing, deleting, and completing to-dos,
+ *                  as well as updating the input text and priority
  */
 
 @Composable
@@ -106,6 +106,8 @@ fun TodoScreen(
                         )
                     }
                 }
+
+                // Delete Button
                 if (todoToEdit != null) {
                     Button(
                         onClick = {
@@ -121,11 +123,11 @@ fun TodoScreen(
                 // The add button is only shown when the text input is not empty
                 if(states.text.isNotEmpty()){
                     Button(onClick = {
-                        //new todo
+                        //new task
                         if (todoToEdit == null) {
                             callbacks.addTodo(states.text, states.priority)
                         }
-                        //edit todo
+                        //edit task
                         else {
                             callbacks.updateTodo(
                                 todoToEdit!!.copy(
@@ -138,6 +140,7 @@ fun TodoScreen(
 
                         // Clears the input field
                         callbacks.onTextChanged("")
+                        showInput = false
                     }) {
                         Text(
                             if (todoToEdit == null) "Add to list"
@@ -149,10 +152,6 @@ fun TodoScreen(
 
         // Scrollable container for all UI elements
         LazyColumn(modifier = Modifier.padding(innerPadding)) {
-            // Screen title
-            item {
-                Text(text = "Todo Screen")
-            }
 
             // Displays all existing to-dos
             items(items = states.stillTodos, key = { it.id }) { stillTodo ->
