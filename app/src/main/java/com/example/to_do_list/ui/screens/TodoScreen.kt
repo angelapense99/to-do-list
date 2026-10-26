@@ -108,10 +108,10 @@ fun TodoScreen(
                 }
 
                 // Delete Button
-                if (todoToEdit != null) {
+                todoToEdit?.let { todoToEditHelp ->
                     Button(
                         onClick = {
-                            callbacks.deleteTodo(todoToEdit!!)
+                            callbacks.deleteTodo(todoToEditHelp)
                             todoToEdit = null
                             callbacks.onTextChanged("")
                         }
@@ -121,20 +121,21 @@ fun TodoScreen(
                 }
 
                 // The add button is only shown when the text input is not empty
+
                 if(states.text.isNotEmpty()){
                     Button(onClick = {
                         //new task
                         if (todoToEdit == null) {
                             callbacks.addTodo(states.text, states.priority)
-                        }
-                        //edit task
-                        else {
-                            callbacks.updateTodo(
-                                todoToEdit!!.copy(
-                                    title = states.text,
-                                    priority = states.priority
+                        } else {
+                            todoToEdit?.let { todo ->
+                                callbacks.updateTodo(
+                                    todo.copy(
+                                        title = states.text,
+                                        priority = states.priority
+                                    )
                                 )
-                            )
+                            }
                             todoToEdit = null
                         }
 
