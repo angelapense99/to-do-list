@@ -109,6 +109,7 @@ dependencies {
     implementation(libs.androidx.compose.material3)
 
     implementation(libs.core.ktx)
+    implementation(libs.androidx.material3)
 
     // Compose testing
     androidTestImplementation(platform(libs.androidx.compose.bom))

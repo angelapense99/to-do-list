@@ -1,6 +1,8 @@
 package com.example.to_do_list.ui.component
 
+import android.R
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -26,6 +28,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.to_do_list.data.Todo
 import androidx.compose.material.icons.filled.RadioButtonUnchecked
+import androidx.compose.material3.AlertDialogDefaults.containerColor
+import androidx.compose.material3.CardColors
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontStyle
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -33,7 +39,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 fun TodoItem(
     todo: Todo,
     onDone: (Todo) -> Unit,
-    onClick: (Todo) -> Unit
+    onClick: (Todo) -> Unit,
+    color: Color = MaterialTheme.colorScheme.primary,
+    fontColor: Color = MaterialTheme.colorScheme.onPrimary
 ) {
     val state = rememberSwipeToDismissBoxState(
         initialValue = SwipeToDismissBoxValue.Settled,
@@ -52,11 +60,14 @@ fun TodoItem(
         },
         content = {
             Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = color),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 12.dp, vertical = 6.dp),
                 shape = RoundedCornerShape(20.dp),
-                elevation = CardDefaults.cardElevation(6.dp)
+                elevation = CardDefaults.cardElevation(6.dp),
+
             ) {
                 Column (
                     modifier = Modifier
@@ -66,19 +77,27 @@ fun TodoItem(
                             onClick(todo)
                         },
                 ) {
-                    //Icon(Icons.Filled.RadioButtonUnchecked, null)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.Top
+                    ) {
+                        Text(
+                            text = todo.title,
+                            color = fontColor,
+                            style = MaterialTheme.typography.titleMedium
+                        )
+
+                        Text(
+                            text = "Priorität: ${todo.priority}",
+                            color = fontColor
+                        )
+                    }
+
                     Text(
-                        text = todo.title,
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Text(
-                        text = "Priorität: ${todo.priority}"
-                    )
-                    Text(
-                        text = "status: ${todo.done}"
-                    )
-                    Text(
-                        text = "Tap to edit."
+                        text = "Tap to edit.",
+                        color = fontColor,
+                        fontStyle = FontStyle.Italic
                     )
                 }
 

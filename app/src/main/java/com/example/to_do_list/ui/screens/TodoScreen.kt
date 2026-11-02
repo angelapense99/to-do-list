@@ -1,11 +1,14 @@
 package com.example.to_do_list.ui.screens
 
+import android.R
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -19,7 +22,9 @@ import com.example.to_do_list.data.Todo
 import com.example.to_do_list.ui.component.TodoItem
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.graphics.Color
 
 
 /**
@@ -154,7 +159,7 @@ fun TodoScreen(
         // Scrollable container for all UI elements
         LazyColumn(modifier = Modifier.padding(innerPadding)) {
 
-            // Displays all existing to-dos
+            // Displays all open to-dos
             items(items = states.stillTodos, key = { it.id }) { stillTodo ->
                 TodoItem(
                     stillTodo,
@@ -165,6 +170,13 @@ fun TodoScreen(
                     }
                 )
             }
+
+            // Separator
+
+            item{
+                Text(text = "Bereits bearbeitet:",
+                    color = MaterialTheme.colorScheme.onSurface)
+            }
             // Displays all completed to-dos
             items(items = states.alreadyDones, key = { it.id }) {alreadyDone ->
                 TodoItem(
@@ -173,7 +185,9 @@ fun TodoScreen(
                     onClick = {
                         todoToEdit = it
                         showInput = true
-                    }
+                    },
+                    color = MaterialTheme.colorScheme.secondary,
+                    fontColor = MaterialTheme.colorScheme.onSecondary
                 )
             }
 
