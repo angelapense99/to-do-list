@@ -5,11 +5,12 @@ A small Android to-do list application built with Kotlin and Jetpack Compose. Ta
 ## Features
 
 - View tasks stored in the local Room database.
-- Add a new task from the Compose screen.
+- Add tasks to and delete them from the Compose screen.
 - Keep task data on the device between app launches.
-- Use a modern Android stack based on Kotlin, Compose Material 3, coroutines, Room, and AndroidX Lifecycle.
+- Distinguish between open and completed tasks.
+- Edit tasks.
 
-> The project is an early prototype.
+> The project is an prototype.
 
 ## Requirements
 
